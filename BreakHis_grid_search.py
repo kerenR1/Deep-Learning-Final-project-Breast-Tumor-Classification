@@ -21,9 +21,7 @@ import json
 import time
 import cv2
 
-# ============================================================================
 # GRID SEARCH CONFIGURATION
-# ============================================================================
 print("=" * 80)
 print("BREAKHIS GRID SEARCH - COMPREHENSIVE HYPERPARAMETER SEARCH")
 print("=" * 80)
@@ -68,9 +66,7 @@ tf.random.set_seed(RANDOM_STATE)
 os.makedirs(GRID_SEARCH_OUTPUT_DIR, exist_ok=True)
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 
-# ============================================================================
 # FOCAL LOSS IMPLEMENTATION
-# ============================================================================
 def focal_loss(gamma=2.0, alpha=0.25):
     """
     Focal Loss for addressing class imbalance
@@ -94,9 +90,6 @@ def focal_loss(gamma=2.0, alpha=0.25):
     
     return focal_loss_fixed
 
-# ============================================================================
-# UTILITY FUNCTIONS
-# ============================================================================
 def extract_patient_id(filepath):
     """Extract patient ID from BreakHis filename"""
     filename = os.path.basename(filepath)
@@ -174,9 +167,7 @@ def create_training_plots(history, output_dir, experiment_name):
     plt.savefig(os.path.join(output_dir, 'loss_plot.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
-# ============================================================================
 # MAIN GRID SEARCH LOOP
-# ============================================================================
 def run_experiment(exp_num, class_balance, dropout_rate, loss_function):
     """Run a single experiment with given hyperparameters"""
     
@@ -210,9 +201,7 @@ def run_experiment(exp_num, class_balance, dropout_rate, loss_function):
         for category in ['benign', 'malignant']:
             os.makedirs(os.path.join(directory, category), exist_ok=True)
     
-    # ============================================================================
     # STEP 1: COLLECT AND SPLIT DATA
-    # ============================================================================
     print("\nSTEP 1: Collecting images and creating patient-level split...")
     
     all_benign_images = glob.glob(os.path.join(benign_dir, '**', '*.png'), recursive=True)
@@ -268,9 +257,7 @@ def run_experiment(exp_num, class_balance, dropout_rate, loss_function):
     print(f"  Val - Benign: {val_copied['benign']}, Malignant: {val_copied['malignant']}")
     print(f"  Test - Benign: {test_copied['benign']}, Malignant: {test_copied['malignant']}")
     
-    # ============================================================================
     # STEP 2: BALANCE TRAINING SET (if 50-50 balance enabled)
-    # ============================================================================
     if class_balance == 'balanced_50_50':
         print("\nSTEP 3: Balancing training set to 50-50...")
         
@@ -411,9 +398,7 @@ def run_experiment(exp_num, class_balance, dropout_rate, loss_function):
                         for category in ['benign', 'malignant']}
         print(f"  Final Imbalanced Distribution: {final_counts}")
     
-    # ============================================================================
     # STEP 3: CREATE DATA GENERATORS
-    # ============================================================================
     print("\nSTEP 3: Creating data generators...")
     
     train_datagen = ImageDataGenerator(
@@ -454,9 +439,7 @@ def run_experiment(exp_num, class_balance, dropout_rate, loss_function):
         shuffle=False
     )
     
-    # ============================================================================
     # STEP 4: BUILD MODEL
-    # ============================================================================
     print("\nSTEP 4: Building model...")
     
     model = Sequential([
@@ -478,9 +461,7 @@ def run_experiment(exp_num, class_balance, dropout_rate, loss_function):
         metrics=['accuracy']
     )
 
-    # ============================================================================
     # STEP 4.5: COMPUTE CLASS WEIGHTS (for imbalanced mode only)
-    # ============================================================================
     class_weights = None
     if class_balance == 'imbalanced':
         print("\nSTEP 4.5: Computing class weights for imbalanced mode...")
@@ -497,9 +478,7 @@ def run_experiment(exp_num, class_balance, dropout_rate, loss_function):
         print("\nSTEP 4.5: Skipping class weights (balanced 50-50 mode - not needed)")
         
     
-    # ============================================================================
     # STEP 5: SETUP CALLBACKS
-    # ============================================================================
     print("\nSTEP 5: Setting up callbacks...")
     
     checkpoint_filepath = os.path.join(CHECKPOINT_DIR, f'{exp_name}_{timestamp}.keras')
@@ -527,9 +506,7 @@ def run_experiment(exp_num, class_balance, dropout_rate, loss_function):
         verbose=0
     )
     
-    # ============================================================================
     # STEP 6: TRAIN MODEL
-    # ============================================================================
     print(f"\nSTEP 6: Training model for {EPOCHS} epochs...")
     
     # Apply class weights only for imbalanced mode
@@ -553,9 +530,7 @@ def run_experiment(exp_num, class_balance, dropout_rate, loss_function):
             verbose=2
     )
     
-    # ============================================================================
     # STEP 7: EVALUATE MODEL
-    # ============================================================================
     print("\nSTEP 7: Evaluating model...")
     
     best_model = tf.keras.models.load_model(checkpoint_filepath, custom_objects={'focal_loss_fixed': focal_loss()} if loss_function == 'focal_loss' else None)
@@ -582,9 +557,7 @@ def run_experiment(exp_num, class_balance, dropout_rate, loss_function):
     print(f"  Test Accuracy: {test_accuracy * 100:.2f}%")
     print(f"  Test Loss: {test_loss:.4f}")
     
-    # ============================================================================
     # STEP 8: SAVE RESULTS
-    # ============================================================================
     print("\nSTEP 8: Saving results...")
     
     # Save model
@@ -675,9 +648,7 @@ def run_experiment(exp_num, class_balance, dropout_rate, loss_function):
         'config': config
     }
 
-# ============================================================================
 # RUN ALL EXPERIMENTS
-# ============================================================================
 print("\n" + "=" * 80)
 print("STARTING GRID SEARCH")
 print("=" * 80)
@@ -698,9 +669,7 @@ for balance in GRID_PARAMS['class_balance']:
                 
             exp_num += 1
 
-# ============================================================================
 # SUMMARIZE RESULTS
-# ============================================================================
 total_time = time.time() - grid_search_start_time
 
 print("\n" + "=" * 80)

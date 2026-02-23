@@ -18,9 +18,7 @@ import seaborn as sns
 from datetime import datetime
 import json
 
-# ============================================================================
 # CONFIGURATION
-# ============================================================================
 BASE_DIR = '/gpfs0/bgu-rriemer/users/reifk/data/BreaKHis_v1/BreaKHis_v1/histology_slides/breast'
 CHECKPOINT_DIR = '/gpfs0/bgu-rriemer/users/reifk/efficientnet_checkpoints'
 
@@ -64,9 +62,7 @@ print(f"Output directory: {output_dir}")
 print(f"Checkpoint directory: {CHECKPOINT_DIR}")
 print()
 
-# ============================================================================
 # STEP 1: DATA PREPARATION
-# ============================================================================
 print("STEP 1: Preparing data splits...")
 
 # Initialize split info tracker
@@ -102,9 +98,7 @@ print("\nSplit Information Summary:")
 print(f"Benign   - Total: {total_b}, Train: {train_b} ({train_b/total_b*100:.1f}%), Val: {val_b} ({val_b/total_b*100:.1f}%)")
 print(f"Malignant - Total: {total_m}, Train: {train_m} ({train_m/total_m*100:.1f}%), Val: {val_m} ({val_m/total_m*100:.1f}%)")
 
-# ============================================================================
 # STEP 2: DATA AUGMENTATION SETUP
-# ============================================================================
 print("\n" + "=" * 80)
 print("STEP 2: Setting up data augmentation...")
 
@@ -147,9 +141,7 @@ test_generator = val_datagen.flow_from_directory(
     shuffle=False
 )
 
-# ============================================================================
 # STEP 3: BALANCE TRAINING SET TO 50-50 RATIO
-# ============================================================================
 print("\n" + "=" * 80)
 print("STEP 3: Balancing training set to 50-50 ratio...")
 
@@ -267,9 +259,7 @@ test_generator = val_datagen.flow_from_directory(
     shuffle=False
 )
 
-# ============================================================================
 # STEP 4: BUILD MODEL
-# ============================================================================
 print("\n" + "=" * 80)
 print("STEP 4: Building model architecture...")
 
@@ -289,9 +279,7 @@ model.compile(
 print("\nModel architecture:")
 model.summary()
 
-# ============================================================================
 # STEP 5: SETUP CALLBACKS
-# ============================================================================
 print("\n" + "=" * 80)
 print("STEP 5: Setting up callbacks...")
 
@@ -334,9 +322,7 @@ print("  - EarlyStopping: patience=15")
 print("  - ReduceLROnPlateau: patience=5, factor=0.5")
 print("  - LearningRateScheduler: exponential decay after epoch 10")
 
-# ============================================================================
 # STEP 6: COMPUTE CLASS WEIGHTS
-# ============================================================================
 print("\n" + "=" * 80)
 print("STEP 6: Computing class weights...")
 
@@ -349,9 +335,7 @@ class_weights = {i: class_weights[i] for i in range(len(class_weights))}
 
 print(f"Class weights: {class_weights}")
 
-# ============================================================================
 # STEP 7: TRAIN MODEL
-# ============================================================================
 print("\n" + "=" * 80)
 print("STEP 7: Training model for 37 epochs...")
 print("=" * 80)
@@ -365,9 +349,7 @@ history = model.fit(
     verbose=1
 )
 
-# ============================================================================
 # STEP 8: LOAD BEST MODEL AND EVALUATE
-# ============================================================================
 print("\n" + "=" * 80)
 print("STEP 8: Loading best model and evaluating...")
 
@@ -384,9 +366,7 @@ test_loss, test_accuracy = best_model.evaluate(test_generator, verbose=0)
 print(f'\nTest loss: {test_loss:.4f}')
 print(f'Test accuracy: {test_accuracy * 100:.2f}%')
 
-# ============================================================================
 # STEP 9: GENERATE PREDICTIONS AND METRICS
-# ============================================================================
 print("\n" + "=" * 80)
 print("STEP 9: Generating predictions and metrics...")
 
@@ -407,9 +387,7 @@ print("\nClassification Report:")
 report = classification_report(y_true, y_pred_labels, target_names=class_names)
 print(report)
 
-# ============================================================================
 # STEP 10: PLOT RESULTS
-# ============================================================================
 print("\n" + "=" * 80)
 print("STEP 10: Plotting results...")
 
@@ -453,9 +431,7 @@ plt.savefig(os.path.join(output_dir, 'confusion_matrix.png'), dpi=300, bbox_inch
 print(f"Saved confusion matrix to: {os.path.join(output_dir, 'confusion_matrix.png')}")
 plt.close()
 
-# ============================================================================
 # STEP 11: SAVE ARTIFACTS
-# ============================================================================
 print("\n" + "=" * 80)
 print("STEP 11: Saving all artifacts and configurations...")
 
@@ -539,9 +515,8 @@ with open(history_path, 'w') as f:
     json.dump(history_dict, f, indent=2)
 print(f"Training history saved to: {history_path}")
 
-# ============================================================================
 # TRAINING COMPLETE
-# ============================================================================
+# Print final summary of results and artifacts
 print("\n" + "=" * 80)
 print("TRAINING COMPLETE!")
 print("=" * 80)
