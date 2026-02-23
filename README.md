@@ -10,3 +10,10 @@ BreakHis_binary_Baseline_2.py: Advanced baseline using Patient ID-based splittin
 BreakHis_grid_search.py: Grid search used (loss functions, Dropout, etc.).
 
 requirements.txt: Python dependencies including TensorFlow, Scikit-learn etc.
+
+Dataset:
+The data used in this project is the BreaKHis (Breast Cancer Histopathological Database).
+
+Source: Kaggle - BreaKHis Dataset: https://www.kaggle.com/datasets/ambarish/breakhis
+
+Description: Contains 7,909 microscopic images of breast tumor tissue collected from 81 patients, classified into benign and malignant groups
